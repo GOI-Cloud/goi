@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>GOI-Cloud</title>
+    <!-- Favicon-->
+    <link rel="icon" type="image/x-icon" th:href="@{resources/img/assets/favicon.ico}" />
+    <!-- Bootstrap Icons-->
+    <link th:href="@{resources/css/public.css}" rel="stylesheet" />
+    <!-- Google fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Merriweather+Sans:400,700" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic" rel="stylesheet" type="text/css" />
+    <!-- SimpleLightbox plugin CSS-->
+    <link th:href="@{resources/js/index01/simpleLightbox.min.css}" rel="stylesheet" />
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link th:href="@{resources/js/index01/styles-index01.css}" rel="stylesheet" />
+    <!-- Favicon-->
+    <link rel="icon" type="image/x-icon" th:href="@{resources/img/assets/favicon.ico}" />
+    <!-- Custom fonts for this template-->
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet"/>
+    <!-- Custom styles for this template-->
+    <link th:href="@{resources/css/_animation.scss}" rel="stylesheet">
+    <link th:href="@{resources/css/_navbar.scss}" rel="stylesheet">
+    <link th:href="@{resources/layui/css/layui.css}" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{resources/lib/css/ol.css}" type="text/css"/>
+    <script th:src="@{resources/lib/build/colorscales.js}"></script>
+    <script th:src="@{resources/lib/build/plotty.min.js}"></script>
+    <script th:src="@{resources/lib/build/geotiff.js}"></script>
+    <script th:src="@{resources/lib/build/ol.js}"></script>
+    <link rel="stylesheet" href="/resources/layui_ext/dtree/dtree.css" media="all" />
+    <link rel="stylesheet" href="/resources/layui_ext/dtree/font/dtreefont.css" media="all" />
+</head>
+<style>
+    .map {
+        /*position:relative;*/
+        height: 600px;
+        /*width: 1600px;*/
+        /*border: 1px solid #97aaa8;*/
+        background-color: #dee5e8;
+    }
+    #map .ol-zoom-extent button {
+        color: black;
+        position: absolute;
+        left: 1420px;
+        top: -20px;
+    }
+    #map .custom-mouse-position {
+        width: inherit;
+        position:absolute;
+        left: 1300px;
+        top: 10px;
+        z-index: 999;
+        color: black;
+    }
+    #map .ol-zoomslider {
+        height: 150px;
+        position: absolute;
+        left: 1425px;
+        top: 42px;
+    }
+    .map_1 {
+        position:static;
+        height: 500px;
+        width: 500px;
+        border: 1px solid #97aaa8;
+        background-color: #dee5e8;
+    }
+    .ol-popup {
+        position: absolute;
+        color: #32def5;
+        opacity: 0.9;
+        padding: 15px;
+        border: 16px dashed #034378;
+        border-radius: 20px;
+        background-color: #064a90;
+        bottom: 12px;
+        left: -50px;
+        min-width: 330px;
+    }
+    .ol-popup:after {
+        border-top-color: #efeaea;
+        border-width: 10px;
+        left: 48px;
+        margin-left: -10px;
+    }
+    .ol-popup:before {
+        border-top-color: #cccccc;
+        border-width: 11px;
+        left: 48px;
+        margin-left: -11px;
+    }
+    table {
+        border-collapse: collapse;
+        border-spacing: 0;
+        border: 1px solid #c0c0c0;
+    }
+    th,td {
+        border: 1px solid #d0d0d0;
+        color: #404060;
+        padding: 10px;
+    }
+    th {
+        background-color: #C00000;
+        font: bold 16px "微软雅黑";
+        color: #fff;
+    }
+    td {
+        font: 14px "微软雅黑";
+    }
+    tbody tr {
+        background-color: #f0f0f0;
+    }
+    tbody tr:hover {
+        cursor: pointer;
+        background-color: #fafafa;
+    }
+    .layerControl{
+        position: static;
+        top: 0.8rem;
+        bottom: 0.8rem;
+        left: 2rem;
+        z-index: 999;
+        width: 22%;
+        height: 95px;
+        padding: 2px;
+        border: 16px dashed #034378;
+        border-radius: 20px;
+        background-color: #064a90;
+    }
+    .layerControl.label {
+        color: #32def5;
+    }
+    #layerControl .title {
+        color: ivory;
+        text-align: center;
+        font-size: 20px;
+        margin: 10px 0;
+    }
+    #layerControl li {
+        color: ivory;
+    }
+    #layerControl input {
+        margin-right: 10px;
+    }
+    .earth{
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        color: white;
+        background: rgba(0,0,0,0.2);
+        margin-bottom:0;
+        position: relative;
+        overflow: hidden;
+        min-height: 100vh;
+    }
+    .video-bg{
+        position: absolute;
+        z-index: -1;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: fill;
+    }
+    #turns{
+        position: absolute;
+        left: 11rem;
+        top: 8.5rem;
+        z-index: 99;
+    }
+    #x{
+        background: #b4ddea;
+        width: 90px;
+    }
+    #y{
+        background: #b7f5f5;
+        width: 90px;
+    }
+    .window_css {
+        /*display: none;*/
+        position: static;
+        top: 0.8rem;
+        bottom: 0.8rem;
+        left: 2rem;
+        width: 36%;
+        height: 100px;
+        padding: 1px;
+        border: 16px dashed #034378;
+        border-radius: 20px 20px 20px 20px;
+        background-color: #064a90;
+        z-index: 11;
+    }
+    .window_css_contact {
+        display: none;
+        position: fixed;
+        bottom: 20%;
+        right: 25%;
+        width: 49%;
+        height: 300px;
+        border: 3px solid #07477d;
+        background-color: rgba(70, 84, 109, 0.79);
+        z-index: 11;
+    }
+    .range-zh{ /*设置滑块下面那条线的样式*/
+        outline: none; /*去掉点击时出现的外边框*/
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none; /*这三个是去掉那条线原有的默认样式，划重点！！*/
+        width: 30%;
+        height: 0.8rem;
+        background: #1db0db;
+        /*这三个是设置滑块下面那条线的样式*/
+    }
+    input[type="range"]::-webkit-slider-thumb {
+        /*::-webkit-slider-thumb是代表给滑块的样式进行变更*/
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none; /*//这三个是去掉滑块原有的默认样式，划重点！！*/
+        -webkit-box-shadow:0 0 2px ; /*设置滑块的阴影*/
+        width: 0.5rem;
+        height:1.0rem;
+        background: #ef8515;
+        background-size: cover;
+        /*//这几个是设置滑块的样式*/
+    }
+    .form-data{
+        background-color: rgba(177, 185, 187, 0.93);
+        position: absolute;
+        left: 10px;
+        top: 122px ;
+        height: 200px;
+        width: 280px;
+        z-index: 9999;
+    }
+</style>
+<body id="page-top">
+<!-- Navigation-->
+<nav class="navbar navbar-expand-lg .offcanvas-bottom fixed-top py-1" id="mainNav">
+    <div class="container px-4 px-lg-5">
+        <a class="navbar-brand" href="#page-top">GOI-Cloud</a>
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ms-auto my-2 my-lg-0">
+                <li class="nav-item"><a class="nav-link" href="#about">地图视图</a></li>
+                <li class="nav-item"><a class="nav-link" href="#services">交互功能</a></li>
+                <li class="nav-item"><a class="nav-link" href="#portfolio">地质灾害动态</a></li>
+                <li class="nav-item"><a class="nav-link" href="javascript:void(0)" onclick="displayWindow_contact()">联系我们</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/sys/tologin}" target="_blank">管理员入口</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<!-- Masthead-->
+<header class="earth">
+    <div class="container px-4 px-lg-5 h-50">
+        <div class="row gx-4 gx-lg-5 h-50 align-items-end justify-content-center text-center" style="position: absolute;bottom:100px">
+            <div class="col-lg-8 align-self-end">
+                <h1 id="div1">影像大地测量综合观测成像云平台</h1>
+                <hr class="divider-blue" />
+            </div>
+            <div class="col-lg-8 align-self-baseline">
+                <p style="color: #71c9f3">在这里，您可以查看灾害相关信息及图像结果展示，并结合自己的数据资料进行深入研究</p>
+                <br><br><br>
+                <a class="btn btn-info btn-xl" style="color: #092634 " href="#about">开始体验</a>
+            </div>
+        </div>
+    </div>
+    <video class="video-bg" autoplay muted loop>
+        <source src="resources/data/mp4/earth1.mp4" type="video/mp4">
+    </video>
+    <!--滚动新闻-->
+    <div class="layui-carousel" id="verpng" style="position: absolute;left: 60px">
+        <div carousel-item="">
+            <div><img style="width: 100%;height: 100%; object-fit: cover"  src="resources/img/assets/img/portfolio/thumbnails/1.jpg"></div>
+            <div><img style="width: 100%;height: 100%; object-fit: cover" src="resources/img/assets/img/portfolio/thumbnails/2.jpg"></div>
+            <div><img style="width: 100%;height: 100%;object-fit: cover" src="resources/img/assets/img/portfolio/thumbnails/3.jpg"></div>
+            <div><img style="width: 100%;height: 100%;object-fit: cover" src="resources/img/assets/img/portfolio/thumbnails/4.jpg"></div>
+            <div><img style="width: 100%;height: 100%;object-fit: cover" src="resources/img/assets/img/portfolio/thumbnails/5.jpg"></div>
+            <div><img style="width: 100%;height: 100%;object-fit: cover" src="resources/img/assets/img/portfolio/thumbnails/6.jpg"></div>
+            <div><img style="width: 100%;height: 100%;object-fit: cover" src="resources/img/assets/img/portfolio/thumbnails/1.jpg"></div>
+        </div>
+    </div>
+    <!--向左滚动代码结束-->
+</header>
+<!-- mapview-->
+<section class="page-section bg-secondary" id="about">
+    <div class="card">
+        <div class="card-header:first-child">
+             <nav class="navbar navbar-expand navbar-light bg-light mb-0">
+                 <!--地震查询悬浮窗口-->
+                 <div id="window" class="window_css" style="line-height: 25px">
+                     <a style="color: #32def5 ">日期范围：</a>
+                     <label>
+                         <input type="text" style="color: #073693 ;width:130px; height: 20px" class="layui-input" name="starttime" id="starttime"  value="2022-09-01" placeholder="yyyy-MM-dd" autocomplete="off" >
+                     </label>
+                     <a style="color: #32def5 ">— —</a>
+                     <label>
+                        <input type="text" style="color: #073693 ;width:130px; height: 20px" class="layui-input" name="endtime" id="endtime" value="2022-09-20" placeholder="yyyy-MM-dd" autocomplete="off" >
+                     </label>
+                     <label style="color: #32def5">震&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级：
+                         <input type="range" min="0" max="10" step="0.1" name="magMin" id="magMin"  value="5" class="range-zh" >
+                         <span id="valueMagMin">9</span>— —
+                         <input type="range" min="0" max="10" step="0.1" name="magMax" id="magMax"  value="9" class="range-zh" >
+                         <span id="valueMagMax">9</span>
+                     </label>
+                     <label style="color: #32def5">深&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;度：
+                         <input type="range" min="1" max="200" step="1" name="depthMin" id="depthMin"  value="1" class="range-zh" >
+                         <span id="valueDepthMin">1</span>— —
+                         <input type="range" min="1" max="200" step="1" name="depthMax" id="depthMax"  value="30" class="range-zh" >
+                         <span id="valueDepthMax">30</span>
+                     </label>
+                     <label style="color: #32def5;display: none">纬度范围：
+                         <input type="text" name="latitudeMin" id="latitudeMin"  lay-verify="required" placeholder="请输入最小纬度" autocomplete="off" >
+                         — —
+                         <input type="text" name="latitudeMax" id="latitudeMax"  lay-verify="required" placeholder="请输入最大纬度" autocomplete="off" >
+                     </label>
+                     <label style="color: #32def5;display: none">经度范围：
+                         <input type="text" name="longitudeMin" id="longitudeMin" lay-verify="required" placeholder="请输入最小经度" autocomplete="off" >
+                         — —
+                         <input type="text" name="longitudeMax" id="longitudeMax" lay-verify="required" placeholder="请输入最大经度" autocomplete="off" class="input-lg">
+                     </label>
+                     <input type="submit" style="position: absolute;right: inherit;top: 40%" class="layui-btn layui-btn-zh layui-btn-radius layui-btn-xs " value="地震检索" onclick="dizhen()"/>
+                     <button class="layui-btn layui-btn-danger layui-btn-radius layui-btn-xs"  href="javascript:void(0)" onclick="reload_dizhen()">
+                        清空
+                     </button>
+                 </div>&nbsp;&nbsp;
+                 <!--底图切换控制面板-->
+                 <div id="controls1" class="layerControl label">
+                     <p style="line-height: 22px">
+                     <input type="checkbox" id="tian_ter" checked/><label for="tian_ter">天地图地形眩晕</label>
+                     <input type="checkbox" id="tian_cta" checked/><label for="tian_cta">天地图地形注记</label><br>
+                     <input type="checkbox" id="tian_img" /><label for="tian_img">天地图影像底图</label>
+                     <input type="checkbox" id="tian_cia" /><label for="tian_cia">天地图影像注记</label><br>
+                     </p>
+                 </div>&nbsp;&nbsp;
+                 <div class="layerControl label">
+                     <ul id="layerTree" style="line-height: 22px"></ul>
+                 </div>
+             </nav>
+        </div>
+        <div class="card-body">
+            <!-- 观测数据树节点开始 -->
+            <div class="layui-collapse" style="position: absolute;z-index: 99999;width: 285px;">
+                <div class="layui-colla-item">
+                    <h2 class="layui-colla-title">数据目录</h2>
+                    <div class="layui-colla-content layui-show" style="width: 300px">
+                        <div class="layui-card" >
+                            <div id="form-data" class="layui-card-header">
+                                <!-- 查询条件开始-->
+                                <form class="layui-form ">
+                                    <blockquote class="layui-elem-quote quoteBox" style="width: 260px; height: 60px; background-color: rgba(188,191,199,0.45)">
+                                        <div class="layui-input-inline">
+                                            <div class="layui-input-inline" style="width: 130px">
+                                                <input type="text" name="title" id="title" class="layui-input searchVal" placeholder="请输入关键字" />
+                                            </div>
+                                            <button type="button" style="position: relative;left: 10px" class="layui-btn layui-btn-xs" lay-submit lay-filter="doSearch">查询</button>
+                                            <button type="reset" class="layui-btn layui-btn-warm layui-btn-xs">重置</button>
+                                        </div>
+                                    </blockquote>
+                                </form>
+                                <!-- 查询条件结束-->
+                            </div>
+                            <div class="layui-card-body">
+                                <!-- 树节点容器开始 -->
+                                <ul id="layersTree" class="dtree" data-id="0"></ul>
+                                <!-- 树节点容器结束 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <!-- 观测数据树节点结束 -->
+              <!-- 观测数据表格开始 -->
+            <div id="form-data1" class="layui-anim-down" style="display: none">
+                <table class="layui-hide" id="ear_insar_Table" lay-filter="ear_insar_Table"></table>
+                <!-- 工具栏 -->
+                <div id="ear_insar_RowBar" style="display: none;">
+                    <button type="button" class="layui-btn layui-btn-xs" lay-event="playear_insar" ><span class="layui-icon layui-icon-camera"></span>叠加</button>
+                    <button type="button" class="layui-btn layui-btn-zh layui-btn-xs" lay-event="closeear_insar" ><span class="layui-icon layui-icon-close"></span>取消</button>
+                </div>
+            </div>
+            <!-- 观测数据表格结束 -->
+            <!-- 弹窗-->
+            <div id="popup" class="ol-popup" ></div>
+            <!-- 搜索定位-->
+            <div id='turns' style="display: none">
+                <input id="x" type="text" class="input-lg" placeholder="请输入经度" value=''/>
+                <input id="y" type="text" class="input-lg" placeholder="请输入纬度" value=''/>
+                <input type="button" class="btn-primary" value="点击切换" onclick="change()"/>
+            </div>
+            <div id="map" class="map"></div>
+        <div id="scaleline">
+            <a class="layui-word-aux">比例尺：</a>
+            <select id="units">
+                <option value="degrees">degrees</option>
+                <option value="imperial">imperial inch</option>
+                <option value="us">us inch</option>
+                <option value="nautical">nautical mile</option>
+                <option value="metric" selected>metric</option>
+            </select>
+            <select id="type">
+                <option value="scaleline">ScaleLine</option>
+                <option value="scalebar">ScaleBar</option>
+            </select>
+            <select id="steps" style="display:none">
+                <option value=2>2 steps</option>
+                <option value=4 selected>4 steps</option>
+                <option value=6>6 steps</option>
+                <option value=8>8 steps</option>
+            </select>
+            <div id="showScaleTextDiv" style="display:none">
+                <label><input type="checkbox" id="showScaleText" checked> 显示比例尺刻度</label>
+            </div>
+        </div>
+
+            <code>按住Ctrl键可以缩放和移动视图，按Alt+Shift移动鼠标可旋转view</code>
+        </div>
+</section>
+<div style="display: none" id="controlRaster">
+    <br><br><br>
+    <div class="layui-row">
+        <div class="layui-col-md3">
+            <div class="grid-demo grid-demo-bg1">
+                <img id="layerStyle" style="width: inherit;height:inherit" src="http://localhost:8086/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&STRICT=false&style=">
+                colorBar(cm)
+            </div>
+        </div>
+        <div class="layui-col-md3">
+            <div class="grid-demo">
+                <div id="layer_opacity"></div>
+                &nbsp;&nbsp;&nbsp;&nbsp;透明度
+            </div>
+        </div>
+        <div class="layui-col-md3">
+            <div class="grid-demo grid-demo-bg1">
+                <button class="layui-btn"  id="updateRaster">
+                    缠绕尺度🔽<br>
+                    <i class="layui-icon layui-icon-down layui-font-12"></i>
+                </button>
+            </div><br><br>
+            <div class="grid-demo grid-demo-bg1">
+                <button class="layui-btn" id="downloadRaster">
+                    下载数据🔽<br>
+                    <i class="layui-icon layui-icon-down layui-font-12"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <br>
+</div>
+<!-- Services-->
+<section class="page-section" id="services">
+    <div class="container px-4 px-lg-5">
+        <h2 class="text-center mt-0">At Your Service</h2>
+        <hr class="divider" />
+        <div class="row gx-4 gx-lg-5">
+            <div class="col-lg-3 col-md-6 text-center">
+                <div class="mt-4">
+                    <div class="mb-4"><i class="layui-icon layui-icon-search" style="font-size:60px;color: orangered"></i></div>
+                    <h3 class="h4 mb-2">其它格式转TIFF</h3>
+                    <button class='btn-primary' href='javascript:void(0)' onClick='verTiff()'>立即启动</button>
+                    <p class="text-muted mb-0">如果您需要将本地的包含头文件的栅格数据文件转为TIFF格式，请点击这里！</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 text-center">
+                <div class="mt-4">
+                    <div class="mb-4"><i class="layui-icon layui-icon-search" style="font-size:60px;color: orangered"></i></div>
+                    <h3 class="h4 mb-2" >功能扩展</h3>
+                    <button class='btn-primary' href='javascript:void(0)' onClick='inSAR_layers()'>影像图层展示</button>
+                    <p class="text-muted mb-0">All dependencies are kept current to keep things fresh.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 text-center">
+                <div class="mt-4">
+                    <div class="mb-4"><i class="layui-icon layui-icon-search" style="font-size:60px;color: orangered"></i></div>
+                    <h3 class="h4 mb-2" >功能扩展</h3>
+                    <a href="http://localhost:8086/geoserver/web/?0" style="color: #ea4335">影像数据上传</a>
+                    <p class="text-muted mb-0">You can use this design as is, or you can make changes!</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 text-center">
+                <div class="mt-4">
+                    <div class="mb-4"><i class="layui-icon layui-icon-search" style="font-size:60px;color: orangered"></i></div>
+                    <h3 class="h4 mb-2">功能扩展</h3>
+                    <div style=" position: fixed;z-index: -99">
+                        <table  class="layui-hide" id="userTable" lay-filter="userTable"></table>
+                        <div id="userToolBar" style="display: none;">
+                            <button type="button" lay-event="add" class="layui-btn layui-btn-sm"><span class="layui-icon layui-icon-add-1"></span>联系我们</button>
+                        </div>
+                    </div>
+                    <p class="text-muted mb-0">Is it really open source if it's not made with love?</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Portfolio-->
+<div id="portfolio">
+</div>
+<!-- Call to action-->
+<section class="page-section bg-dark text-white">
+    <div class="container ms-3 ms-lg-3 text-center">
+        <h2 style="position: relative;left: 70px">地质灾害动态</h2>
+
+        <a class="btn btn-light btn-xl" style="position: relative;left: 70px" href="https://startbootstrap.com/theme/creative/">备用标题!</a>
+    </div>
+</section>
+<!-- Contact-->
+<section class="page-section" id="contact">
+    <div class="container px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-lg-4 text-center mb-5 mb-lg-0">
+                <i class="bi-clock fs-2 mb-3 text-muted"></i>
+                <div id="localeTime"></div>
+            </div>
+        </div>
+    </div>
+</section>
+<h5 id="plate_1" style="color: rgba(78, 70, 109, 0.696)">青藏地块</h5>
+<h5 id="plate_2" style="color: rgba(78, 70, 109, 0.696)">华南地块</h5>
+<h5 id="plate_3" style="color: rgba(78, 70, 109, 0.696)">东北亚地块</h5>
+<h5 id="plate_4" style="color: rgba(78, 70, 109, 0.696)">西域地块</h5>
+<h5 id="plate_5" style="color: rgba(78, 70, 109, 0.696)">华北地块</h5>
+<h5 id="plate_6" style="color: rgba(78, 70, 109, 0.696)">滇缅地块</h5>
+
+<canvas id="canvas"></canvas>
+<!-- Footer-->
+<footer class="bg-light py-5">
+    <div class="container px-4 px-lg-5">
+        <div class="small text-center text-muted">Copyright &copy; 2023 - 中国地质大学（武汉）地球物理与空间信息学院何平老师课题组</div>
+    </div>
+</footer>
+<!-- Bootstrap core JS-->
+<script th:src="@{resources/js/index01/bootstrap.bundle.min.js}"></script>
+<!-- SimpleLightbox plugin JS-->
+<script th:src="@{resources/js/index01/simpleLightbox.min.js}"></script>
+<!-- Core theme JS-->
+<script th:src="@{resources/js/index01/scripts-index01.js}"></script>
+<script th:src="@{resources/js/ol/source/GeoTIFF.js}"></script>
+<!-- Bootstrap core JavaScript-->
+<script th:src="@{resources/vendor/jquery/jquery.min.js}"></script>
+<script th:src="@{resources/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<!-- Core plugin JavaScript-->
+<script th:src="@{resources/vendor/jquery-easing/jquery.easing.min.js}"></script>
+<!-- Custom scripts for all pages-->
+<script th:src="@{resources/js/main-xin.js}"></script>
+<script th:src="@{resources/lib/build/layerswitcher.js}"></script>
+<script th:src="@{resources/lib/build/src.js}"></script>
+<script th:src="@{resources/lib/examples/common.js}"></script>
+<script th:src="@{resources/lib/build/jszip.min.js}"></script>
+<script th:src="@{resources/lib/build/FileSaver.min.js}"></script>
+<script th:src="@{resources/js/tiff.min.js}"></script>
+<script type="text/javascript" src="/resources/layui/layui.js"></script>
+<script type="text/javascript">
+    var tableIns;
+    function verTiff(){
+        layui.use(['jquery', 'form','flow','layer', 'table', 'laydate','slider'], function () {
+            var layer = layui.layer;
+            layer.open({
+                title: "其它栅格文件转TIFF",
+                type:1,
+                maxmin: true,
+                moveOut: true,
+                shade: 0,
+                area: ['600px', '450px'],
+                offset: '',
+                content: "<form class=\"layui-form\" action=\"\">\n" +
+                    "  <div class=\"layui-form-item\">\n" +
+                    "    <label class=\"layui-form-label\">输入路径:</label>\n" +
+                    "    <div class=\"layui-input-block\">\n" +
+                    "      <input type=\"text\" name=\"title\" required  lay-verify=\"required\" placeholder=\"请输入文件路径\" autocomplete=\"off\" class=\"layui-input\">\n" +
+                    "    </div>\n" +
+                    "  </div>\n" +
+                    "  <div class=\"layui-form-item\">\n" +
+                    "    <label class=\"layui-form-label\">输出路径:</label>\n" +
+                    "    <div class=\"layui-input-block\">\n" +
+                    "      <input type=\"text\" name=\"title\" required  lay-verify=\"required\" placeholder=\"请输入文件路径\" autocomplete=\"off\" class=\"layui-input\">\n" +
+                    "    </div>\n" +
+                    "  </div>\n" +
+                    "  <div class=\"layui-form-item\">\n" +
+                    "    <div class=\"layui-input-block\">\n" +
+                    "      <button class=\"layui-btn\" lay-submit lay-filter=\"formDemo\">立即提交</button>\n" +
+                    "      <button type=\"reset\" class=\"layui-btn layui-btn-primary\">重置</button>\n" +
+                    "    </div>\n" +
+                    "  </div>\n" +
+                    "</form>"
+            });
+        })
+    }
+    var menuTree;
+    /**
+     * 刷新菜单树的方法
+     */
+    function reload() {
+        menuTree.reload();
+    }
+    /**
+     * 加载数据表格的方法
+     * @param menuId
+     */
+    function loadTableData(menuId) {
+        tableIns.reload({
+            where:{"id":menuId},
+            page:{
+                curr:1
+            }
+        });
+    }
+    layui.extend({
+        dtree: '/resources/layui_ext/dtree/dtree'   // {/}的意思即代表采用自有路径，即不跟随 base 路径
+    }).use(['element','carousel','dtree','jquery','tree', 'form','flow','layer', 'table', 'laydate','slider','dropdown'], function () {
+        var dropdown = layui.dropdown
+        var flow = layui.flow;
+        var $ = layui.jquery;
+        var form = layui.form;
+        var layer = layui.layer;
+        var table = layui.table;
+        var laydate = layui.laydate;
+        var slider=layui.slider;
+        var tree=layui.tree;
+        var dtree = layui.dtree;
+        var carousel = layui.carousel
+        var element = layui.element;
+
+        //图片轮播
+        carousel.render({
+            elem: '#verpng'
+            ,width: '1360px'
+            ,height: '400px'
+            ,interval: 5000
+        });
+        //初始化时间选择器
+        laydate.render({
+            elem: '#starttime',
+            type: 'date',
+            theme: '#05427f'
+        });
+        laydate.render({
+            elem: '#endtime',
+            type: 'date',
+            value: new Date(), //参数即为：2018-08-20 20:08:08 格式的此刻时间
+            theme: '#05427f'
+        })
+        //绑定菜单树
+        menuTree = dtree.render({
+            elem:"#layersTree",
+            url:"/ear/insar/loadMenuTreeLeft",
+            dataStyle: "layuiStyle",  //使用layui风格的数据格式
+            response:{message:"msg",statusCode:0},  //修改response中返回数据的定义
+            dataFormat:"list"
+        });
+        //监听树节点的点击事件
+        dtree.on("node(layersTree)",function (obj) {
+            loadTableData(obj.param.nodeId);
+            layer.open({
+                id: "abcd",
+                title: "地壳形变观测数据管理器",
+                type:1,
+                maxmin: true,
+                moveOut: true,
+                tipsMore: true,
+                shade: 0,
+                area: ['750px', '200px'],
+                offset: '622px',
+                content: $("#form-data1"),
+            });
+        });
+        //初始化表格 加载数据
+        tableIns = table.render({
+            elem: "#ear_insar_Table",
+            title: "地震insar图层表格",
+            url: "/ear/insar/insarList",
+            height: "full-600",
+            defaultToolbar: true,
+            cols: [ [
+                {field: 'id', title: 'ID', align: 'center',width:'50'},
+                {field: 'title', title: '名称', align: 'center',width:'300'},
+                {field: 'description', title: '描述', align: 'center',width:'200'},
+                {field: 'remark', title: '备注', align: 'center',width:'120'},
+                {fixed: 'right',type:'checkbox',align:'left'},
+                // {fixed: 'right', title: '操作', toolbar: '#ear_insar_RowBar', align: 'center',width:'160'}
+            ] ],
+            done: function (res, curr, count) {
+                $('tr').css({'background-color': '#c5cecb', 'color': '#fff'});
+                $('th').css({ 'background-color': '#009688','color': '#fff', 'font-weight': 'bold', 'font-size': 'medium' })
+                //非第一页，当前页无数据
+                if (curr > 1 && res.data.length == 0) {
+                    //当前页码-1
+                    var pageValue = curr - 1;
+                    tableIns.reload({
+                        page: {curr: pageValue}   //修改页码
+                    });
+                }
+            }
+        });
+        //监控模糊查询按钮事件
+        form.on("submit(doSearch)", function (data) {
+            tableIns.reload({
+                where: data.field,
+                page: {
+                    curr: 1
+                },
+                done: function(res){
+                }
+            });
+        });
+        table.on('checkbox(ear_insar_Table)', function(obj){
+            var layer_name = obj.data;
+            var GridLayer = new ol.layer.Image({
+                id: "geo_20150222_20150726",
+                title: "geo_20150222_20150726",
+                opacity: 0.6,
+                source: new ol.source.ImageWMS({
+                    ratio: 1,
+                    url: 'http://localhost:8086/geoserver/earthquake/wms', //Geoserver的wms地址，用户可以根据需求而改变
+                    params: {
+                        'FORMAT': 'image/png',
+                        'VERSION': '1.1.0',
+                        "LAYERS": "earthquake:"+layer_name['title'], //图层名称，用户可以根据需求而改变
+                        "exceptions": 'application/vnd.ogc.se_inimage',
+                    }
+                }),
+                visible: false
+            });
+            map.addLayer(GridLayer);
+            if (obj.checked){
+                GridLayer.setVisible(true);
+                window.GridLayer1=GridLayer;
+                window.index=layer.open({
+                    id: "abc",
+                    title: "图层：",
+                    type: 1,
+                    maxmin: true,
+                    moveOut: true,
+                    tipsMore: true,
+                    shade: 0,
+                    area: ['300px', '380px'],
+                    offset: 'rb',
+                    content: $("#controlRaster"),
+                });
+            }else{
+                GridLayer1.setVisible(false);
+                layer.close(index);
+            }
+            // console.log(obj); //当前行的一些常用操作集合
+            // console.log(obj.checked); //当前是否选中状态
+            // console.log(obj.data); //选中行的相关数据
+            slider.render({
+                elem: "#layer_opacity"  //绑定元素
+                ,type:"vertical"
+                ,height:210
+                ,value:6 //初始值
+                ,min: 0 //最小值
+                ,max: 10 //最大值
+                ,step: 1 //步长
+                ,tips:true
+                ,showstep: true //开启间隔点
+                ,change: function(value){
+                    console.log(value) //动态获取滑块数值
+                    GridLayer.setOpacity(value*0.1)
+                }
+            });
+            dropdown.render({
+                elem: '#downloadRaster' //可绑定在任意元素中，此处以上述按钮为例
+                ,style:''
+                ,data: [{
+                    title: 'GeoTiff'
+                    ,id: 'GeoTiff'
+                    ,href: '#'
+                },
+                    {
+                        title: '其它'
+                        ,id: 1
+                        ,href: '#'
+                    },
+                    {
+                        title: '其它'
+                        ,id: 2
+                        ,href: '#'
+                    }]
+                ,id: 'downloadRaster'
+                //菜单被点击的事件
+                ,click: function(obj){
+                    console.log(obj.id);
+                    if(obj.id==='GeoTiff'){
+                        var zip = new JSZip();
+                        zip.file(layer_name['title']+'.tif', 'F:\\Data\\earthquake'+layer_name['title']+'.tif');
+                        // 生成zip文件并下载
+                        zip.generateAsync({
+                            type: 'blob'
+                        }).then(function(content) {
+                            // 下载的文件名
+                            var filename = '123' + '.zip';
+                            // 创建下载链接
+                            var el= document.createElement('a');
+                            el.download = filename;
+                            el.style.display = 'none';
+                            el.href = URL.createObjectURL(content);
+                            document.body.appendChild(el);
+                            el.click();
+                            document.body.removeChild(el);
+                        });
+                    }
+                }
+            });
+            dropdown.render({
+                elem: '#updateRaster' //可绑定在任意元素中，此处以上述按钮为例
+                ,style:''
+                ,data: [{
+                        title: '解缠图'
+                        ,id: 2
+                        ,href: '#'
+                    },
+                    {
+                        title: '3(缩放可查看)'
+                        ,id: 3
+                        ,href: '#'
+                    },{
+                    title: '6(缩放可查看)'
+                    ,id: 6
+                    ,href: '#'
+                },
+                    {
+                        title: '16'
+                        ,id: 16
+                        ,href: '#'
+                    },
+                    {
+                        title: '26'
+                        ,id: 26
+                        ,href: '#'
+                    }]
+                ,id: 'updateRaster'
+                //菜单被点击的事件
+                ,click: function(obj){
+                    console.log(obj.id);
+                    $.post("/ear/insar/updateRaster",{args:obj.id,path:layer_name['title'],earthquake:layer_name['description']},function () {
+                                    $("#view").load(location.href+" #map>*","");
+                    },"json");
+                }
+            });
+            document.getElementById("layerStyle").src="http://localhost:8086/geoserver/wms?REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&WIDTH=20&HEIGHT=20&STRICT=false&style="+layer_name['remark']
+        });
+    });
+</script>
+<script>
+    //得到时间并写入div
+    function getDate(){
+        //获取当前时间
+        var date = new Date();
+        //格式化为本地时间格式
+        var date1 = date.toLocaleString();
+        //获取div
+        var div1 = document.getElementById("localeTime");
+        //将时间写入div
+        div1.innerHTML = date1;
+    }
+    //使用定时器每秒向div写入当前时间
+    setInterval("getDate()",1000);
+    /*当点击调用此方法,将悬浮窗口和背景全部隐藏*/
+    function hideWindow() {
+        document.getElementById("window").style.display = "none";
+        document.getElementById("shadow").style.display = "none";
+    }
+    /*当点击调用此方法,将悬浮窗口和背景全部隐藏*/
+    function hideWindow_1() {
+        document.getElementById("window_content").style.display = "none";
+    }
+    function tableClose() {
+        document.getElementById("form-data").style.display="none";
+        document.getElementById("button_1_open").style.display="block";
+        document.getElementById("button_1_close").style.display="none";
+    }
+    function tablePlay() {
+        document.getElementById("form-data").style.display="block";
+        document.getElementById("button_1_open").style.display="none";
+        document.getElementById("button_1_close").style.display="block";
+    }
+    var status = 1;
+    function run() { //闪烁
+        if (status == 1) {
+            document.getElementById("div1").style.color = "#78c9f5";
+            status = 0;
+        } else {
+            document.getElementById("div1").style.color = "#0696cb";
+            status = 1;
+        }
+    }
+    setInterval("run()",100);
+</script>
+</body>
+</html>
