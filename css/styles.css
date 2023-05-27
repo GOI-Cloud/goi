@@ -611,9 +611,9 @@ progress {
 }
 
 .img-fluid {
-  width: 460px;
+  width: 440px;
   height: 300px;
-  padding-top: 50px;
+  padding-top: 2em;
 }
 
 .img-thumbnail {
